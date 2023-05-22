@@ -154,12 +154,12 @@ async function main() {
         console.log(`timeNow = ${timeNow}`)
             if (resultLength == 0){
                 console.log(`Постов ещё нет, перезапуск через 1 минуту!`)
+                await sleep(editTime);
             } else {
                 runBot().catch(err => console.error(err));
                 await copyMessages(readyMedia);
                 console.log(`Автопостинг завершён!`)
             }
-        await sleep(editTime);
     }
 }
 
