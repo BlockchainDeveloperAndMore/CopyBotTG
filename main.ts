@@ -12,7 +12,8 @@ const channel2Id = -1001763525815;
 const bot = new Telegraf(botToken);
 
 const delay = 900000 // 900000 - 15 min
-const editTime = 600000; // 10 min
+const editTime = 60000; // 1 min
+var timeCheck: number = 0;
 
 function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -63,8 +64,7 @@ async function result(): Promise< any > {
 }
 
 // Функция для пересылки сообщений из канала №1 в канал №2
-async function update(time: number): Promise < any[][] > {
-    let timeOk = time - editTime;
+async function update(): Promise < any[][] > {
     let mediaGroupId: string = "0";
     let readyMedia: any[][] = [[0]];
     let tempMedia: any[] = [];
@@ -91,7 +91,7 @@ async function update(time: number): Promise < any[][] > {
 
         for (let n = 0; n <= channelPost.length - 1; n++) {
                       
-            if (channelPost[n].chat.id == channel1Id && channelPost[n].date < timeOk) {
+            if (channelPost[n].chat.id == channel1Id && channelPost[n].date > timeCheck) {
                 if(channelPost[n].media_group_id) {
                     if(mediaGroupId != channelPost[n].media_group_id) {      
                         mediaGroupId = channelPost[n].media_group_id;
@@ -147,11 +147,11 @@ async function update(time: number): Promise < any[][] > {
 }
 
 async function main() {
-    while (true){
+    while (true) {
         let resultLength = await result();
-        let timeNow = Date.now(); 
-        let readyMedia: any[][] = await update(timeNow);
-        console.log(`timeNow = ${timeNow}`)
+        let readyMedia: any[][] = await update();
+        timeCheck = Date.now();
+        console.log(`timeCheck = ${timeCheck}`)
             if (resultLength == 0){
                 console.log(`Постов ещё нет, перезапуск через 1 минуту!`)
                 await sleep(editTime);

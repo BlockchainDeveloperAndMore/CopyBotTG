@@ -46,7 +46,8 @@ var channel2Id = -1001763525815;
 // Создание экземпляра бота
 var bot = new telegraf_1.Telegraf(botToken);
 var delay = 900000; // 900000 - 15 min
-var editTime = 600000; // 10 min
+var editTime = 60000; // 1 min
+var timeCheck = 0;
 function sleep(ms) {
     return new Promise(function (resolve) { return setTimeout(resolve, ms); });
 }
@@ -128,13 +129,12 @@ function result() {
     });
 }
 // Функция для пересылки сообщений из канала №1 в канал №2
-function update(time) {
+function update() {
     return __awaiter(this, void 0, void 0, function () {
-        var timeOk, mediaGroupId, readyMedia, tempMedia, editDate, response, result, channelPost, i, n, newMedia;
+        var mediaGroupId, readyMedia, tempMedia, editDate, response, result, channelPost, i, n, newMedia;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    timeOk = time - editTime;
                     mediaGroupId = "0";
                     readyMedia = [[0]];
                     tempMedia = [];
@@ -157,7 +157,7 @@ function update(time) {
                     }
                     channelPost.sort(function (a, b) { return a.date - b.date; });
                     for (n = 0; n <= channelPost.length - 1; n++) {
-                        if (channelPost[n].chat.id == channel1Id && channelPost[n].date < timeOk) {
+                        if (channelPost[n].chat.id == channel1Id && channelPost[n].date > timeCheck) {
                             if (channelPost[n].media_group_id) {
                                 if (mediaGroupId != channelPost[n].media_group_id) {
                                     mediaGroupId = channelPost[n].media_group_id;
@@ -208,7 +208,7 @@ function update(time) {
 }
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var resultLength, timeNow, readyMedia;
+        var resultLength, readyMedia;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -216,11 +216,11 @@ function main() {
                     return [4 /*yield*/, result()];
                 case 1:
                     resultLength = _a.sent();
-                    timeNow = Date.now();
-                    return [4 /*yield*/, update(timeNow)];
+                    return [4 /*yield*/, update()];
                 case 2:
                     readyMedia = _a.sent();
-                    console.log("timeNow = ".concat(timeNow));
+                    timeCheck = Date.now();
+                    console.log("timeCheck = ".concat(timeCheck));
                     if (!(resultLength == 0)) return [3 /*break*/, 4];
                     console.log("\u041F\u043E\u0441\u0442\u043E\u0432 \u0435\u0449\u0451 \u043D\u0435\u0442, \u043F\u0435\u0440\u0435\u0437\u0430\u043F\u0443\u0441\u043A \u0447\u0435\u0440\u0435\u0437 1 \u043C\u0438\u043D\u0443\u0442\u0443!");
                     return [4 /*yield*/, sleep(editTime)];
