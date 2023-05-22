@@ -39,13 +39,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var telegraf_1 = require("telegraf");
 var axios_1 = require("axios");
 // Здесь необходимо вставить токен вашего бота
-var botToken = "6269075593:AAHYgQOz46gMwyOYCN1ChPzTpoGZhZp-1Qg";
+var botToken = "TOKEN";
 // Здесь необходимо указать ID двух каналов
 var channel1Id = -1001334934580;
 var channel2Id = -1001763525815;
 // Создание экземпляра бота
 var bot = new telegraf_1.Telegraf(botToken);
-var delay = 5000; // 900000 - 15 min
+var delay = 900000; // 900000 - 15 min
 function sleep(ms) {
     return new Promise(function (resolve) { return setTimeout(resolve, ms); });
 }
@@ -218,7 +218,7 @@ function main() {
                     _a.sent();
                     console.log("\u0410\u0432\u0442\u043E\u043F\u043E\u0441\u0442\u0438\u043D\u0433 \u0437\u0430\u0432\u0435\u0440\u0448\u0451\u043D!");
                     _a.label = 5;
-                case 5: return [4 /*yield*/, sleep(5000)];
+                case 5: return [4 /*yield*/, sleep(60000)];
                 case 6:
                     _a.sent();
                     return [3 /*break*/, 0];
