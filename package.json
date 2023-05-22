@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@types/es6-promise": "^3.3.0",
+    "@types/node": "^20.2.0",
+    "axios": "^1.4.0",
+    "flatted": "^3.2.7",
+    "telegraf": "^4.12.3-canary.1"
+  }
+}
