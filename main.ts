@@ -12,6 +12,7 @@ const channel2Id = -1001763525815;
 const bot = new Telegraf(botToken);
 
 const delay = 900000 // 900000 - 15 min
+const editTime = 600000; // 10 min
 
 function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -62,7 +63,8 @@ async function result(): Promise< any > {
 }
 
 // Функция для пересылки сообщений из канала №1 в канал №2
-async function update(): Promise < any[][] > {
+async function update(time: number): Promise < any[][] > {
+    let timeOk = time - editTime;
     let mediaGroupId: string = "0";
     let readyMedia: any[][] = [[0]];
     let tempMedia: any[] = [];
@@ -75,14 +77,25 @@ async function update(): Promise < any[][] > {
         return readyMedia
     }
 
-        for (let n = 0; n <= result.length - 1; n++) {
+    let channelPost: any = [];
+    for (let i = 0; i < result.length; i++) {
+        if (result[i].channel_post) {
+            channelPost.push(result[i].channel_post);
+        }
+        if (result[i].edited_channel_post) {
+            channelPost.push(result[i].edited_channel_post);
+        }
+    }
 
-            let channelPost = result[n].channel_post !== undefined ? result[n].channel_post : result[n].edited_channel_post;
+    channelPost.sort((a: any, b: any) => a.date - b.date);
 
-            if (channelPost.chat.id == channel1Id) {
-                if(channelPost.media_group_id) {
-                    if(mediaGroupId != channelPost.media_group_id) {      
-                        mediaGroupId = channelPost.media_group_id;
+        for (let n = 0; n <= channelPost.length - 1; n++) {
+                      
+            if (channelPost[n].chat.id == channel1Id && channelPost[n].date < timeOk) {
+                if(channelPost[n].media_group_id) {
+                    if(mediaGroupId != channelPost[n].media_group_id) {      
+                        mediaGroupId = channelPost[n].media_group_id;
+
                         if(tempMedia.length != 0) {
                             readyMedia.splice(readyMedia.length, 1, tempMedia);
                             tempMedia = [];                                
@@ -91,16 +104,16 @@ async function update(): Promise < any[][] > {
 
                     let newMedia = {
                         type: "photo",
-                        media: channelPost.photo[0].file_id,
-                        caption: channelPost.caption,
-                        caption_entities: channelPost.caption_entities,
+                        media: channelPost[n].photo[0].file_id,
+                        caption: channelPost[n].caption,
+                        caption_entities: channelPost[n].caption_entities,
                     }
 
-                    if(channelPost.edit_date !== undefined && channelPost.edit_date > editDate){
+                    if(channelPost[n].edit_date !== undefined && channelPost[n].edit_date > editDate){
                         tempMedia.pop();
                         tempMedia.push(newMedia);
 
-                        editDate = channelPost.edit_date
+                        editDate = channelPost[n].edit_date
                     } else {
                         tempMedia.push(newMedia);
                     }
@@ -112,13 +125,13 @@ async function update(): Promise < any[][] > {
                         tempMedia = [];
                     }
 
-                    if(channelPost.edit_date !== undefined && channelPost.edit_date > editDate){
+                    if(channelPost[n].edit_date !== undefined && channelPost[n].edit_date > editDate){
                         readyMedia.pop();
-                        readyMedia.push(channelPost.message_id);
+                        readyMedia.push(channelPost[n].message_id);
 
-                        editDate = channelPost.edit_date
+                        editDate = channelPost[n].edit_date
                     } else {
-                        readyMedia.push(channelPost.message_id);
+                        readyMedia.push(channelPost[n].message_id);
                     }
                 }
 
@@ -136,7 +149,9 @@ async function update(): Promise < any[][] > {
 async function main() {
     while (true){
         let resultLength = await result();
-        let readyMedia: any[][] = await update();
+        let timeNow = Date.now(); 
+        let readyMedia: any[][] = await update(timeNow);
+        console.log(`timeNow = ${timeNow}`)
             if (resultLength == 0){
                 console.log(`Постов ещё нет, перезапуск через 1 минуту!`)
             } else {
@@ -144,7 +159,7 @@ async function main() {
                 await copyMessages(readyMedia);
                 console.log(`Автопостинг завершён!`)
             }
-        await sleep(60000);
+        await sleep(editTime);
     }
 }
 

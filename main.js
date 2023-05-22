@@ -46,6 +46,7 @@ var channel2Id = -1001763525815;
 // Создание экземпляра бота
 var bot = new telegraf_1.Telegraf(botToken);
 var delay = 900000; // 900000 - 15 min
+var editTime = 600000; // 10 min
 function sleep(ms) {
     return new Promise(function (resolve) { return setTimeout(resolve, ms); });
 }
@@ -127,12 +128,13 @@ function result() {
     });
 }
 // Функция для пересылки сообщений из канала №1 в канал №2
-function update() {
+function update(time) {
     return __awaiter(this, void 0, void 0, function () {
-        var mediaGroupId, readyMedia, tempMedia, editDate, response, result, n, channelPost, newMedia;
+        var timeOk, mediaGroupId, readyMedia, tempMedia, editDate, response, result, channelPost, i, n, newMedia;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    timeOk = time - editTime;
                     mediaGroupId = "0";
                     readyMedia = [[0]];
                     tempMedia = [];
@@ -144,12 +146,21 @@ function update() {
                     if (result.length == 0) {
                         return [2 /*return*/, readyMedia];
                     }
-                    for (n = 0; n <= result.length - 1; n++) {
-                        channelPost = result[n].channel_post !== undefined ? result[n].channel_post : result[n].edited_channel_post;
-                        if (channelPost.chat.id == channel1Id) {
-                            if (channelPost.media_group_id) {
-                                if (mediaGroupId != channelPost.media_group_id) {
-                                    mediaGroupId = channelPost.media_group_id;
+                    channelPost = [];
+                    for (i = 0; i < result.length; i++) {
+                        if (result[i].channel_post) {
+                            channelPost.push(result[i].channel_post);
+                        }
+                        if (result[i].edited_channel_post) {
+                            channelPost.push(result[i].edited_channel_post);
+                        }
+                    }
+                    channelPost.sort(function (a, b) { return a.date - b.date; });
+                    for (n = 0; n <= channelPost.length - 1; n++) {
+                        if (channelPost[n].chat.id == channel1Id && channelPost[n].date < timeOk) {
+                            if (channelPost[n].media_group_id) {
+                                if (mediaGroupId != channelPost[n].media_group_id) {
+                                    mediaGroupId = channelPost[n].media_group_id;
                                     if (tempMedia.length != 0) {
                                         readyMedia.splice(readyMedia.length, 1, tempMedia);
                                         tempMedia = [];
@@ -157,14 +168,14 @@ function update() {
                                 }
                                 newMedia = {
                                     type: "photo",
-                                    media: channelPost.photo[0].file_id,
-                                    caption: channelPost.caption,
-                                    caption_entities: channelPost.caption_entities,
+                                    media: channelPost[n].photo[0].file_id,
+                                    caption: channelPost[n].caption,
+                                    caption_entities: channelPost[n].caption_entities,
                                 };
-                                if (channelPost.edit_date !== undefined && channelPost.edit_date > editDate) {
+                                if (channelPost[n].edit_date !== undefined && channelPost[n].edit_date > editDate) {
                                     tempMedia.pop();
                                     tempMedia.push(newMedia);
-                                    editDate = channelPost.edit_date;
+                                    editDate = channelPost[n].edit_date;
                                 }
                                 else {
                                     tempMedia.push(newMedia);
@@ -175,13 +186,13 @@ function update() {
                                     readyMedia.splice(readyMedia.length, 1, tempMedia);
                                     tempMedia = [];
                                 }
-                                if (channelPost.edit_date !== undefined && channelPost.edit_date > editDate) {
+                                if (channelPost[n].edit_date !== undefined && channelPost[n].edit_date > editDate) {
                                     readyMedia.pop();
-                                    readyMedia.push(channelPost.message_id);
-                                    editDate = channelPost.edit_date;
+                                    readyMedia.push(channelPost[n].message_id);
+                                    editDate = channelPost[n].edit_date;
                                 }
                                 else {
-                                    readyMedia.push(channelPost.message_id);
+                                    readyMedia.push(channelPost[n].message_id);
                                 }
                             }
                         }
@@ -197,7 +208,7 @@ function update() {
 }
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var resultLength, readyMedia;
+        var resultLength, timeNow, readyMedia;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -205,9 +216,11 @@ function main() {
                     return [4 /*yield*/, result()];
                 case 1:
                     resultLength = _a.sent();
-                    return [4 /*yield*/, update()];
+                    timeNow = Date.now();
+                    return [4 /*yield*/, update(timeNow)];
                 case 2:
                     readyMedia = _a.sent();
+                    console.log("timeNow = ".concat(timeNow));
                     if (!(resultLength == 0)) return [3 /*break*/, 3];
                     console.log("\u041F\u043E\u0441\u0442\u043E\u0432 \u0435\u0449\u0451 \u043D\u0435\u0442, \u043F\u0435\u0440\u0435\u0437\u0430\u043F\u0443\u0441\u043A \u0447\u0435\u0440\u0435\u0437 1 \u043C\u0438\u043D\u0443\u0442\u0443!");
                     return [3 /*break*/, 5];
@@ -218,7 +231,7 @@ function main() {
                     _a.sent();
                     console.log("\u0410\u0432\u0442\u043E\u043F\u043E\u0441\u0442\u0438\u043D\u0433 \u0437\u0430\u0432\u0435\u0440\u0448\u0451\u043D!");
                     _a.label = 5;
-                case 5: return [4 /*yield*/, sleep(60000)];
+                case 5: return [4 /*yield*/, sleep(editTime)];
                 case 6:
                     _a.sent();
                     return [3 /*break*/, 0];
