@@ -221,20 +221,20 @@ function main() {
                 case 2:
                     readyMedia = _a.sent();
                     console.log("timeNow = ".concat(timeNow));
-                    if (!(resultLength == 0)) return [3 /*break*/, 3];
+                    if (!(resultLength == 0)) return [3 /*break*/, 4];
                     console.log("\u041F\u043E\u0441\u0442\u043E\u0432 \u0435\u0449\u0451 \u043D\u0435\u0442, \u043F\u0435\u0440\u0435\u0437\u0430\u043F\u0443\u0441\u043A \u0447\u0435\u0440\u0435\u0437 1 \u043C\u0438\u043D\u0443\u0442\u0443!");
-                    return [3 /*break*/, 5];
+                    return [4 /*yield*/, sleep(editTime)];
                 case 3:
+                    _a.sent();
+                    return [3 /*break*/, 6];
+                case 4:
                     runBot().catch(function (err) { return console.error(err); });
                     return [4 /*yield*/, copyMessages(readyMedia)];
-                case 4:
+                case 5:
                     _a.sent();
                     console.log("\u0410\u0432\u0442\u043E\u043F\u043E\u0441\u0442\u0438\u043D\u0433 \u0437\u0430\u0432\u0435\u0440\u0448\u0451\u043D!");
-                    _a.label = 5;
-                case 5: return [4 /*yield*/, sleep(editTime)];
-                case 6:
-                    _a.sent();
-                    return [3 /*break*/, 0];
+                    _a.label = 6;
+                case 6: return [3 /*break*/, 0];
                 case 7: return [2 /*return*/];
             }
         });
