@@ -2,16 +2,16 @@ import { Telegraf, Context } from 'telegraf';
 import axios from 'axios';
 
 // Здесь необходимо вставить токен вашего бота
-const botToken = `TOKEN`;
+const botToken = `5999615892:AAH7UDJgTS_w_-msOIUUanFzpSd8d3CMo8M`;
 
 // Здесь необходимо указать ID двух каналов
-const channel1Id = -1001334934580;
-const channel2Id = -1001763525815;
+const channel1Id = -1001590839912;
+const channel2Id = -1001524532739;
 
 // Создание экземпляра бота
 const bot = new Telegraf(botToken);
 
-const delay = 900000 // 900000 - 15 min
+const delay = 5000 // 900000 - 15 min
 
 function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -144,7 +144,7 @@ async function main() {
                 await copyMessages(readyMedia);
                 console.log(`Автопостинг завершён!`)
             }
-        await sleep(60000);
+        await sleep(5000);
     }
 }
 

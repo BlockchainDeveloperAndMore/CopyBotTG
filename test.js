@@ -39,10 +39,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var telegraf_1 = require("telegraf");
 var axios_1 = require("axios");
 // Здесь необходимо вставить токен вашего бота
-var botToken = "6269075593:AAHYgQOz46gMwyOYCN1ChPzTpoGZhZp-1Qg";
+var botToken = "5999615892:AAH7UDJgTS_w_-msOIUUanFzpSd8d3CMo8M";
 // Здесь необходимо указать ID двух каналов
-var channel1Id = -1001334934580;
-var channel2Id = -1001763525815;
+var channel1Id = -1001590839912;
+var channel2Id = -1001524532739;
 // Создание экземпляра бота
 var bot = new telegraf_1.Telegraf(botToken);
 var delay = 5000; // 900000 - 15 min
@@ -183,6 +183,8 @@ function update() {
                                 else {
                                     readyMedia.push(channelPost.message_id);
                                 }
+                                console.log("result = ".concat(n));
+                                console.log(readyMedia);
                             }
                         }
                     }
